@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Инфографика реализации amoCRM для клиники Практик</title>
+<style>
+:root{
+  --amo:#1e6fd9;          /* amoCRM */
+  --amo-bg:#e8f1fc;
+  --dental:#1f8f5a;       /* DentalPRO */
+  --dental-bg:#e5f5ec;
+  --calltouch:#7a3fb6;    /* Calltouch */
+  --calltouch-bg:#efe7f7;
+  --albato:#e07b1a;       /* Альбато */
+  --albato-bg:#fdf0e0;
+  --src:#f4f6f9;          /* источники */
+  --src-border:#cfd6df;
+  --risk:#c0354b;         /* риски */
+  --risk-bg:#fbe7eb;
+  --report:#3a4654;       /* отчеты */
+  --report-bg:#e9ecef;
+  --ok:#1f8f5a;
+  --warn:#e07b1a;
+  --bad:#c0354b;
+  --ink:#1d2733;
+  --muted:#5b6775;
+  --line:#d8dde4;
+  --bg:#fafbfc;
+  --card:#ffffff;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,"PT Sans",sans-serif;font-size:15px;line-height:1.5}
+a{color:var(--amo);text-decoration:none}
+a:hover{text-decoration:underline}
+header.top{position:sticky;top:0;z-index:50;background:#ffffffee;backdrop-filter:saturate(160%) blur(8px);border-bottom:1px solid var(--line)}
+header.top .wrap{max-width:1280px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+header.top h1{margin:0;font-size:18px;font-weight:700}
+nav.toc{display:flex;flex-wrap:wrap;gap:6px}
+nav.toc a{font-size:12px;padding:6px 10px;border-radius:999px;background:#eef2f7;color:#1d2733;border:1px solid var(--line)}
+nav.toc a:hover{background:#e3e9f1;text-decoration:none}
+.container{max-width:1280px;margin:0 auto;padding:24px 20px 80px}
+section{margin:36px 0;padding:24px;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(20,30,40,.03)}
+section h2{margin:0 0 6px;font-size:22px}
+section .lede{margin:0 0 18px;color:var(--muted);font-size:14px}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.g5{grid-template-columns:repeat(5,minmax(0,1fr))}
+@media (max-width:980px){.g3,.g4,.g5{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:620px){.g2,.g3,.g4,.g5{grid-template-columns:1fr}}
+.card{border:1px solid var(--line);border-radius:10px;padding:14px;background:#fff}
+.card h3{margin:0 0 6px;font-size:15px}
+.card p{margin:0;color:var(--muted);font-size:13px}
+.card ul{margin:6px 0 0 18px;padding:0;font-size:13px}
+.card li{margin:2px 0}
+.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid currentColor;line-height:1.4;font-weight:600;letter-spacing:.2px}
+.tag.amo{color:var(--amo);background:var(--amo-bg);border-color:#bfd8f7}
+.tag.dental{color:var(--dental);background:var(--dental-bg);border-color:#bfe4cf}
+.tag.calltouch{color:var(--calltouch);background:var(--calltouch-bg);border-color:#d6c1ec}
+.tag.albato{color:var(--albato);background:var(--albato-bg);border-color:#f5d4ad}
+.tag.risk{color:var(--risk);background:var(--risk-bg);border-color:#f1bcc6}
+.tag.report{color:var(--report);background:var(--report-bg);border-color:#c5ccd4}
+.tag.ok{color:#fff;background:var(--ok);border-color:var(--ok)}
+.tag.warn{color:#fff;background:var(--warn);border-color:var(--warn)}
+.tag.bad{color:#fff;background:var(--bad);border-color:var(--bad)}
+.legend{display:flex;flex-wrap:wrap;gap:8px}
+.legend .item{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:#fff;padding:6px 10px;border-radius:8px;font-size:13px}
+.dot{width:12px;height:12px;border-radius:3px;display:inline-block}
+.dot.amo{background:var(--amo)}
+.dot.dental{background:var(--dental)}
+.dot.calltouch{background:var(--calltouch)}
+.dot.albato{background:var(--albato)}
+.dot.src{background:#aab4c0}
+.dot.risk{background:var(--risk)}
+.dot.report{background:var(--report)}
+
+/* Архитектура */
+.arch{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;align-items:stretch}
+@media (max-width:980px){.arch{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.box{border-radius:10px;padding:14px;border:2px solid;background:#fff;position:relative}
+.box.amo{border-color:var(--amo);background:var(--amo-bg)}
+.box.dental{border-color:var(--dental);background:var(--dental-bg)}
+.box.calltouch{border-color:var(--calltouch);background:var(--calltouch-bg)}
+.box.albato{border-color:var(--albato);background:var(--albato-bg)}
+.box h3{margin:0 0 6px;font-size:15px}
+.box p{margin:0;font-size:13px;color:#1d2733}
+.box ul{margin:6px 0 0 18px;font-size:13px}
+.flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:14px 0;font-size:13px;color:#1d2733}
+.flow .step{padding:8px 12px;background:#fff;border:1px solid var(--line);border-radius:8px}
+.flow .step.amo{border-color:#bfd8f7;background:var(--amo-bg)}
+.flow .step.dental{border-color:#bfe4cf;background:var(--dental-bg)}
+.flow .step.calltouch{border-color:#d6c1ec;background:var(--calltouch-bg)}
+.flow .step.albato{border-color:#f5d4ad;background:var(--albato-bg)}
+.flow .arrow{color:var(--muted);font-weight:700}
+
+/* Источники */
+.sources{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:980px){.sources{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:620px){.sources{grid-template-columns:1fr}}
+.src-card{border:1px solid var(--src-border);background:var(--src);border-radius:10px;padding:12px}
+.src-card h4{margin:0 0 6px;font-size:14px;display:flex;align-items:center;gap:6px}
+.src-card .num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;background:#fff;border:1px solid var(--src-border);font-size:12px;font-weight:700;color:var(--ink)}
+.src-card ul{margin:6px 0 0 18px;padding:0;font-size:13px}
+.src-card li{margin:2px 0}
+
+/* Путь пациента */
+.journey{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px;font-size:12px}
+@media (max-width:980px){.journey{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (max-width:620px){.journey{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.j-step{border:1px solid var(--line);background:#fff;border-radius:8px;padding:10px 8px;text-align:center}
+.j-step b{display:block;font-size:13px;margin-bottom:4px}
+.j-step span{color:var(--muted)}
+
+/* Воронки */
+.funnels{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
+@media (max-width:1180px){.funnels{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:620px){.funnels{grid-template-columns:1fr}}
+.funnel{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;display:flex;flex-direction:column}
+.funnel header{margin-bottom:8px}
+.funnel header h3{margin:0;font-size:14px}
+.funnel header p{margin:2px 0 0;font-size:12px;color:var(--muted)}
+.stages{display:flex;flex-direction:column;gap:4px}
+.stage{padding:8px 10px;border-radius:6px;font-size:12px;color:#fff;background:linear-gradient(90deg,var(--amo) 0%,#3e8df0 100%)}
+.stage.warn{background:linear-gradient(90deg,#e07b1a,#f0a05a)}
+.stage.bad{background:linear-gradient(90deg,#c0354b,#e06478)}
+.stage.ok{background:linear-gradient(90deg,#1f8f5a,#3eb37c)}
+.stage.muted{background:linear-gradient(90deg,#5b6775,#8693a3)}
+.funnel .meta{margin-top:8px;font-size:12px;color:var(--ink)}
+.funnel .meta b{display:block;margin-bottom:4px}
+.funnel .meta ul{margin:0 0 0 16px;padding:0}
+
+/* Таблицы */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:#f4f6f9;font-weight:600}
+table.compact td,table.compact th{padding:6px 8px;font-size:12px}
+.kbd{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;background:#eef2f7;padding:1px 6px;border-radius:4px;border:1px solid var(--line)}
+
+/* Автоматизации */
+.auto-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:760px){.auto-list{grid-template-columns:1fr}}
+.auto{border:1px solid var(--line);border-radius:8px;padding:10px;background:#fff}
+.auto h4{margin:0 0 4px;font-size:14px}
+.auto p{margin:0;font-size:12px;color:var(--muted)}
+.auto code{font-size:12px}
+
+/* SLA */
+.sla{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:760px){.sla{grid-template-columns:1fr}}
+.sla .item{border:1px solid var(--line);border-radius:8px;padding:10px;background:#fff;display:flex;flex-direction:column;gap:4px}
+.sla .item b{font-size:13px}
+.sla .item .v{font-size:18px;color:var(--amo);font-weight:700}
+.sla .item .v.warn{color:var(--warn)}
+.sla .item .v.bad{color:var(--bad)}
+
+/* Риски */
+.risks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:760px){.risks{grid-template-columns:1fr}}
+.risk-card{border:1px solid #f1bcc6;background:var(--risk-bg);border-radius:8px;padding:10px}
+.risk-card h4{margin:0 0 4px;font-size:14px;color:var(--risk)}
+.risk-card p{margin:0;font-size:13px}
+
+/* Чек-лист */
+.checklist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+@media (max-width:760px){.checklist{grid-template-columns:1fr}}
+.check{display:flex;gap:8px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:#fff}
+.check .n{flex:0 0 22px;height:22px;border-radius:6px;background:#eef2f7;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--ink)}
+.check b{font-size:13px}
+.check p{margin:2px 0 0;font-size:12px;color:var(--muted)}
+
+/* Кнопка наверх */
+#toTop{position:fixed;right:18px;bottom:18px;background:var(--amo);color:#fff;border:none;border-radius:999px;padding:10px 14px;font-size:13px;cursor:pointer;box-shadow:0 4px 12px rgba(30,111,217,.3);display:none;z-index:60}
+#toTop.show{display:block}
+
+/* Печать */
+@media print{
+  header.top, #toTop, nav.toc{display:none !important}
+  body{background:#fff;font-size:11px}
+  section{break-inside:avoid;page-break-inside:avoid;border:1px solid #999;box-shadow:none;margin:10px 0;padding:10px}
+  section h2{font-size:14px}
+  .container{padding:0}
+  .funnels,.sources,.arch,.checklist,.risks,.sla,.auto-list,.grid.g2,.grid.g3,.grid.g4,.grid.g5{display:block}
+  .funnel,.src-card,.box,.check,.auto,.risk-card,.card{margin:6px 0}
+}
+
+/* Двухколоночные блоки полей */
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media (max-width:760px){.fields{grid-template-columns:1fr}}
+
+/* Роли */
+.roles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:760px){.roles{grid-template-columns:1fr}}
+.role{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff}
+.role h3{margin:0 0 4px;font-size:15px}
+.role p{margin:0 0 6px;font-size:12px;color:var(--muted)}
+.role ul{margin:0 0 0 18px;padding:0;font-size:13px}
+
+.callout{border-left:4px solid var(--amo);background:var(--amo-bg);padding:10px 12px;border-radius:6px;font-size:13px;margin:8px 0}
+.callout.warn{border-color:var(--warn);background:var(--albato-bg)}
+.callout.bad{border-color:var(--bad);background:var(--risk-bg)}
+.small{font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <h1>Инфографика реализации amoCRM для клиники Практик</h1>
+    <nav class="toc">
+      <a href="#legend">Легенда</a>
+      <a href="#arch">Архитектура</a>
+      <a href="#sources">Источники</a>
+      <a href="#journey">Путь пациента</a>
+      <a href="#funnels">Воронки</a>
+      <a href="#auto">Автоматизации</a>
+      <a href="#refs">Справочники</a>
+      <a href="#fields">Поля</a>
+      <a href="#roles">Роли</a>
+      <a href="#reports">Отчеты</a>
+      <a href="#acceptance">Приемка</a>
+      <a href="#risks">Риски</a>
+    </nav>
+  </div>
+</header>
+
+<div class="container">
+
+<section id="legend">
+  <h2>Легенда систем</h2>
+  <p class="lede">Четыре цветовые группы используются по всей инфографике для быстрой идентификации зоны ответственности каждой системы.</p>
+  <div class="legend">
+    <div class="item"><span class="dot amo"></span><b>amoCRM</b> &mdash; маркетинг, продажи, коммуникации, задачи, сделки, источники, аналитика воронок</div>
+    <div class="item"><span class="dot dental"></span><b>DentalPRO</b> &mdash; расписание, медкарта, план лечения, факт визита, оплаты, медстатусы</div>
+    <div class="item"><span class="dot calltouch"></span><b>Calltouch</b> &mdash; звонки, формы, чаты, UTM, рекламные источники, запись звонков</div>
+    <div class="item"><span class="dot albato"></span><b>Альбато</b> &mdash; шина интеграции Calltouch и amoCRM, OAuth, обратная передача статусов</div>
+    <div class="item"><span class="dot src"></span>Источники заявок</div>
+    <div class="item"><span class="dot risk"></span>Риски и безопасность</div>
+    <div class="item"><span class="dot report"></span>Отчеты и KPI</div>
+  </div>
+  <div class="callout">amoCRM не подменяет DentalPRO в части медицины и расписания. DentalPRO остается мастер-системой по записи, медкарте, плану лечения, оплатам и факту визитов. amoCRM хранит управленческое отражение этих статусов.</div>
+</section>
+
+<section id="arch">
+  <h2>Общая архитектура</h2>
+  <p class="lede">Четыре системы и их зоны ответственности. Стрелки ниже показывают направления потоков данных.</p>
+  <div class="arch">
+    <div class="box calltouch">
+      <span class="tag calltouch">Calltouch</span>
+      <h3>Сбор обращений и аналитика каналов</h3>
+      <ul>
+        <li>Входящие и пропущенные звонки</li>
+        <li>Заявки с сайта, чаты</li>
+        <li>UTM, рекламный источник</li>
+        <li>Запись разговоров</li>
+        <li>Аналитика каналов и кампаний</li>
+      </ul>
+    </div>
+    <div class="box albato">
+      <span class="tag albato">Альбато</span>
+      <h3>Шина интеграции</h3>
+      <ul>
+        <li>Calltouch -> amoCRM</li>
+        <li>OAuth amoCRM</li>
+        <li>Маппинг полей и источников</li>
+        <li>Обратная передача статусов</li>
+        <li>Логи доставки</li>
+      </ul>
+    </div>
+    <div class="box amo">
+      <span class="tag amo">amoCRM</span>
+      <h3>Маркетинг, продажи, коммуникации</h3>
+      <ul>
+        <li>5 воронок продаж и сервиса</li>
+        <li>Сделки, контакты, задачи</li>
+        <li>Звонки, чаты, мессенджеры</li>
+        <li>Причины отказов, неявок, переносов</li>
+        <li>Аналитика источников и SLA</li>
+      </ul>
+    </div>
+    <div class="box dental">
+      <span class="tag dental">DentalPRO</span>
+      <h3>Медицинская мастер-система</h3>
+      <ul>
+        <li>Расписание и запись на прием</li>
+        <li>Медкарта пациента</li>
+        <li>План лечения и согласование</li>
+        <li>Факт визита, неявка, перенос</li>
+        <li>Оплаты, начало и завершение лечения</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 style="margin-top:18px;font-size:15px">Потоки данных</h3>
+
+  <div class="flow">
+    <span class="step calltouch">Источник заявки</span>
+    <span class="arrow">-&gt;</span>
+    <span class="step calltouch">Calltouch</span>
+    <span class="arrow">-&gt;</span>
+    <span class="step albato">Альбато</span>
+    <span class="arrow">-&gt;</span>
+    <span class="step amo">amoCRM сделка и контакт</span>
+  </div>
+
+  <div class="flow">
+    <span class="step dental">DentalPRO</span>
+    <span class="arrow">-&gt;</span>
+    <span class="step amo">Записан / Подтвержден / Пришел / Не пришел</span>
+    <span class="arrow">-&gt;</span>
+    <span class="step amo">План / Лечение / Завершено</span>
+  </div>
+
+  <div class="flow">
+    <span class="step amo">amoCRM</span>
+    <span class="arrow">-&gt;</span>
+    <span class="step albato">Альбато</span>
+    <span class="arrow">-&gt;</span>
+    <span class="step calltouch">Calltouch (статус сделки)</span>
+    <span class="arrow">-&gt;</span>
+    <span class="step report">Сквозная аналитика каналов</span>
+  </div>
+
+  <div class="flow">
+    <span class="step amo">amoCRM</span>
+    <span class="arrow">-&gt;</span>
+    <span class="step report">Руководитель / Координатор лечения / Маркетолог / Администратор</span>
+  </div>
+
+  <div class="callout warn">Контракт интеграции: amoCRM хранит идентификаторы из всех систем &mdash; <span class="kbd">ID пациента DentalPRO</span>, <span class="kbd">ID записи DentalPRO</span>, <span class="kbd">ID обращения Calltouch</span>. Без них автоматизации и обратная передача статусов работать не будут.</div>
+</section>
+
+<section id="sources">
+  <h2>Карта источников заявок</h2>
+  <p class="lede">11 групп источников. Все они нормализуются в два поля: <b>Источник первичного привлечения</b> (заполняется один раз и не перезаписывается) и <b>Источник текущей сделки</b> (заполняется для каждого нового обращения).</p>
+  <div class="sources">
+    <div class="src-card"><h4><span class="num">1</span> Реклама в поиске</h4><ul><li>Яндекс Директ - поиск</li><li>Яндекс Директ - РСЯ</li><li>Яндекс Директ - ретаргетинг</li></ul></div>
+    <div class="src-card"><h4><span class="num">2</span> Социальные сети</h4><ul><li>VK Реклама</li><li>VK сообщество</li><li>VK органика</li></ul></div>
+    <div class="src-card"><h4><span class="num">3</span> Геоагрегаторы</h4><ul><li>Яндекс Карты</li><li>2ГИС</li></ul></div>
+    <div class="src-card"><h4><span class="num">4</span> Медицинские агрегаторы</h4><ul><li>Напоправку</li><li>Продокторов</li></ul></div>
+    <div class="src-card"><h4><span class="num">5</span> SEO</h4><ul><li>Сайт - SEO органика</li><li>Сайт - блог SEO</li><li>Сайт - страница услуги SEO</li></ul></div>
+    <div class="src-card"><h4><span class="num">6</span> Прямые обращения</h4><ul><li>Прямой звонок</li><li>Прямой заход на сайт</li><li>Брендовый запрос</li></ul></div>
+    <div class="src-card"><h4><span class="num">7</span> Рекомендации</h4><ul><li>Рекомендация пациента</li><li>Рекомендация врача</li><li>Партнерский источник</li></ul></div>
+    <div class="src-card"><h4><span class="num">8</span> Офлайн</h4><ul><li>Вывеска</li><li>Наружная реклама</li><li>Листовка</li><li>Мероприятие</li></ul></div>
+    <div class="src-card"><h4><span class="num">9</span> Повторные пациенты</h4><ul><li>Самостоятельное повторное обращение</li><li>Обращение после лечения</li><li>Обращение после профгигиены</li></ul></div>
+    <div class="src-card"><h4><span class="num">10</span> Реактивация базы</h4><ul><li>Исходящий звонок</li><li>WhatsApp</li><li>SMS</li><li>Рассылка</li></ul></div>
+    <div class="src-card"><h4><span class="num">11</span> Не определено</h4><ul><li>Источник не передан</li><li>Требует ручного уточнения</li></ul></div>
+  </div>
+
+  <div class="callout">Маркетолог еженедельно проверяет долю значения "Не определено" и устраняет ее: настройка UTM, доработка форм, корректировка номеров Calltouch, мэппинг в Альбато.</div>
+</section>
+
+<section id="journey">
+  <h2>Путь пациента</h2>
+  <p class="lede">Горизонтальный сценарий движения пациента от первого контакта до повторного визита. Каждый шаг привязан к воронке amoCRM и факту в DentalPRO.</p>
+  <div class="journey">
+    <div class="j-step"><b>Заявка</b><span>Звонок, форма, чат, агрегатор</span></div>
+    <div class="j-step"><b>Сделка</b><span>amoCRM, воронка 1</span></div>
+    <div class="j-step"><b>Запись</b><span>DentalPRO -> "Записан"</span></div>
+    <div class="j-step"><b>Подтверждение</b><span>SMS, звонок, мессенджер</span></div>
+    <div class="j-step"><b>Приход</b><span>"Пришел" + воронка 2 "План"</span></div>
+    <div class="j-step"><b>Согласование</b><span>"Согласован" -> воронка 3 "Лечение"</span></div>
+    <div class="j-step"><b>Лечение и завершение</b><span>DentalPRO факт оплат и визитов</span></div>
+    <div class="j-step"><b>Повторный визит</b><span>Воронка 4 - профгигиена и контроль</span></div>
+  </div>
+  <div class="callout warn">Пациент не теряется между этапами: каждая сделка либо имеет следующую задачу, либо финальный результат с причиной. Сделок без задачи и без результата быть не должно.</div>
+</section>
+
+<section id="funnels">
+  <h2>Пять воронок amoCRM</h2>
+  <p class="lede">Каждая воронка решает свою задачу и имеет свои блокировки переходов. Финальные этапы выделены цветом: зеленый - успех, оранжевый - рабочий контроль, красный - закрытие, серый - нецелевой.</p>
+  <div class="funnels">
+
+    <div class="funnel">
+      <header><h3>1. Первичные обращения</h3><p>Захват, квалификация, запись.</p></header>
+      <div class="stages">
+        <div class="stage">1. Новая заявка</div>
+        <div class="stage">2. Первый контакт</div>
+        <div class="stage">3. Квалификация</div>
+        <div class="stage warn">4. Нет связи</div>
+        <div class="stage">5. Подбор врача и времени</div>
+        <div class="stage">6. Записан</div>
+        <div class="stage">7. Ожидает подтверждения</div>
+        <div class="stage">8. Подтвержден</div>
+        <div class="stage ok">9. Пришел</div>
+        <div class="stage warn">10. Не пришел</div>
+        <div class="stage warn">11. Перенос</div>
+        <div class="stage bad">12. Закрыто - отказ</div>
+        <div class="stage muted">13. Закрыто - нецелевой</div>
+      </div>
+      <div class="meta">
+        <b>Блокировки</b>
+        <ul>
+          <li>В "Записан" - врач, дата, время, филиал, ID DentalPRO</li>
+          <li>В "Не пришел" - причина неявки</li>
+          <li>В "Перенос" - причина, инициатор, новая дата</li>
+          <li>В "Закрыто - отказ" - причина и комментарий</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="funnel">
+      <header><h3>2. План лечения</h3><p>Управленческое отражение плана из DentalPRO.</p></header>
+      <div class="stages">
+        <div class="stage">1. Консультация проведена</div>
+        <div class="stage">2. Требуется диагностика / КТ</div>
+        <div class="stage">3. План составлен</div>
+        <div class="stage">4. План презентован</div>
+        <div class="stage warn">5. Думает</div>
+        <div class="stage">6. Доработка плана</div>
+        <div class="stage ok">7. Согласован</div>
+        <div class="stage ok">8. Записан на лечение</div>
+        <div class="stage bad">9. План не согласован</div>
+      </div>
+      <div class="meta">
+        <b>Контроль</b>
+        <ul>
+          <li>"Думает" - касания на 24ч, 3 дня, 7 дней</li>
+          <li>Координатор лечения держит "План составлен" без согласования</li>
+          <li>В "Согласован" - согласованная сумма и дата старта</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="funnel">
+      <header><h3>3. Лечение</h3><p>Удержание пациента в активном лечении.</p></header>
+      <div class="stages">
+        <div class="stage">1. План согласован</div>
+        <div class="stage">2. Записан на старт лечения</div>
+        <div class="stage">3. Начал лечение</div>
+        <div class="stage">4. Активное лечение</div>
+        <div class="stage warn">5. Требуется следующая запись</div>
+        <div class="stage warn">6. Пауза в лечении</div>
+        <div class="stage bad">7. Риск оттока</div>
+        <div class="stage ok">8. Лечение завершено</div>
+        <div class="stage bad">9. Прервано пациентом</div>
+      </div>
+      <div class="meta">
+        <b>Сигналы</b>
+        <ul>
+          <li>Нет следующей записи -> "Требуется следующая запись"</li>
+          <li>Нет активности 14+ дней -> "Риск оттока"</li>
+          <li>Завершено -> сделка в воронку 4</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="funnel">
+      <header><h3>4. Повторные визиты</h3><p>Профгигиена, контроль, возврат.</p></header>
+      <div class="stages">
+        <div class="stage">1. К приглашению</div>
+        <div class="stage">2. Связаться</div>
+        <div class="stage">3. Записан</div>
+        <div class="stage warn">4. Нет связи</div>
+        <div class="stage warn">5. Отложил</div>
+        <div class="stage">6. Подтвержден</div>
+        <div class="stage ok">7. Пришел</div>
+        <div class="stage warn">8. Не пришел</div>
+        <div class="stage warn">9. Перенос</div>
+        <div class="stage bad">10. Отказ</div>
+      </div>
+      <div class="meta">
+        <b>Логика</b>
+        <ul>
+          <li>Создается после завершения лечения</li>
+          <li>"Отложил" - обязательна дата следующего касания</li>
+          <li>Пришел -> новый цикл возврата</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="funnel">
+      <header><h3>5. Реактивация базы</h3><p>Сегментная работа со спящей базой.</p></header>
+      <div class="stages">
+        <div class="stage">1. Новый сегмент</div>
+        <div class="stage">2. Подготовить предложение</div>
+        <div class="stage">3. Первое касание</div>
+        <div class="stage">4. Второе касание</div>
+        <div class="stage">5. Третье касание</div>
+        <div class="stage ok">6. Записан</div>
+        <div class="stage warn">7. Напомнить позже</div>
+        <div class="stage warn">8. Нет связи</div>
+        <div class="stage bad">9. Отказ</div>
+      </div>
+      <div class="meta">
+        <b>Сегменты</b>
+        <ul>
+          <li>Не согласовал план</li>
+          <li>Недозвон, неявка, прервал лечение</li>
+          <li>Давно не был, отказ по цене</li>
+          <li>Отложенный спрос, без повторного визита</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section id="auto">
+  <h2>Карта автоматизаций</h2>
+  <p class="lede">Базовый набор роботов и интеграционных правил. Все работают на стороне amoCRM или Альбато; DentalPRO выступает источником фактов.</p>
+  <div class="auto-list">
+    <div class="auto"><h4>Прием обращения из Calltouch</h4><p>Альбато создает контакт и сделку в воронке 1, проставляет источник, UTM, ID обращения Calltouch, ставит первую задачу администратору.</p></div>
+    <div class="auto"><h4>Дедупликация по телефону</h4><p>При совпадении телефона новый контакт не создается. К существующему пациенту привязывается примечание и задача; новая сделка только если нет активной.</p></div>
+    <div class="auto"><h4>SLA: новая заявка 5 минут</h4><p>Если первый контакт не зафиксирован за 5 минут в рабочее время, эскалация Координатору лечения и оповещение руководителю.</p></div>
+    <div class="auto"><h4>Запись в DentalPRO -> "Записан"</h4><p>По webhook DentalPRO в amoCRM передаются ID записи, врач, дата, филиал; сделка переходит в "Записан".</p></div>
+    <div class="auto"><h4>Подтверждение приема</h4><p>За 24 часа до визита - SMS / мессенджер. По ответу пациента сделка идет в "Подтвержден" или "Не пришел / перенос".</p></div>
+    <div class="auto"><h4>Факт прихода</h4><p>DentalPRO передает факт прихода - amoCRM переводит сделку в "Пришел" и создает сделку в воронке 2 "План лечения".</p></div>
+    <div class="auto"><h4>Неявка</h4><p>Нет факта прихода в окне приема - сделка в "Не пришел", блокируется без указания причины. Задача администратору в день неявки.</p></div>
+    <div class="auto"><h4>Перенос приема</h4><p>Перенос в DentalPRO -> сделка в "Перенос". Без причины, инициатора и новой даты сделка не закрывается.</p></div>
+    <div class="auto"><h4>"Думает" на этапе плана</h4><p>Создается серия касаний 24ч / 3 дня / 7 дней. Если ответа нет - сделка идет в "План не согласован" и в воронку 5 "Реактивация".</p></div>
+    <div class="auto"><h4>Согласование плана</h4><p>В amoCRM "Согласован" блокируется без согласованной суммы и даты старта. Создается сделка в воронке 3 "Лечение".</p></div>
+    <div class="auto"><h4>Риск оттока</h4><p>Незавершенное лечение без активности 14+ дней - сделка в "Риск оттока", уведомление Координатору лечения.</p></div>
+    <div class="auto"><h4>Завершение лечения</h4><p>DentalPRO передает завершение - amoCRM закрывает сделку в воронке 3 и создает в воронке 4 с обязательной датой следующего контроля или профгигиены.</p></div>
+    <div class="auto"><h4>Реактивация по сегментам</h4><p>Сегмент пациентов без активности и без записи попадает в воронку 5. Серия касаний 1, 2, 3.</p></div>
+    <div class="auto"><h4>Обратная передача статусов в Calltouch</h4><p>Альбато получает изменения сделки и пишет статус в Calltouch для сквозной аналитики каналов.</p></div>
+    <div class="auto"><h4>Нет следующей задачи</h4><p>Сделка без задачи и без финального результата подсвечивается в отчете и эскалируется руководителю смены.</p></div>
+    <div class="auto"><h4>Эскалация SLA</h4><p>Просрочка SLA на любом этапе создает задачу руководителю и помечает сделку флагом "SLA нарушен".</p></div>
+  </div>
+
+  <h3 style="margin-top:18px;font-size:15px">SLA</h3>
+  <div class="sla">
+    <div class="item"><b>Новая заявка в рабочее время</b><span class="v">до 5 минут</span><span class="small">Первый контакт администратора</span></div>
+    <div class="item"><b>Пропущенный звонок</b><span class="v">до 10 минут</span><span class="small">Обратный звонок и фиксация</span></div>
+    <div class="item"><b>Заявка вне рабочего времени</b><span class="v">до 30 минут</span><span class="small">После начала ближайшей смены</span></div>
+    <div class="item"><b>Неявка</b><span class="v warn">в день неявки</span><span class="small">Контакт и причина</span></div>
+    <div class="item"><b>Перенос без новой даты</b><span class="v warn">1 рабочий день</span><span class="small">Контакт и дата следующего касания</span></div>
+    <div class="item"><b>Сделка без задачи</b><span class="v bad">недопустима</span><span class="small">Эскалация автоматически</span></div>
+  </div>
+</section>
+
+<section id="refs">
+  <h2>Справочники причин</h2>
+  <p class="lede">Закрытые списки. Свободный текст не допускается, но поле "Комментарий" обязательно.</p>
+
+  <div class="grid g3">
+    <div class="card">
+      <h3>Причины отказа</h3>
+      <ol style="margin:6px 0 0 18px;padding:0;font-size:13px">
+        <li>Дорого</li><li>Нет денег сейчас</li><li>Нужна рассрочка / кредит</li>
+        <li>Думает без решения</li><li>Советуется с родственниками</li>
+        <li>Сравнивает с другой клиникой</li><li>Выбрал другую клинику</li>
+        <li>Не доверяет плану лечения</li><li>Боится лечения</li>
+        <li>Неудобное время</li><li>Неудобная локация</li>
+        <li>Уехал / командировка</li><li>Заболел</li>
+        <li>Медицинские противопоказания</li><li>Не наш профиль</li>
+        <li>Ошибочная заявка</li><li>Не дозвонились после серии касаний</li>
+        <li>Конфликтный пациент</li><li>Отказ без объяснения</li><li>Другое</li>
+      </ol>
+    </div>
+    <div class="card">
+      <h3>Причины неявки</h3>
+      <ol style="margin:6px 0 0 18px;padding:0;font-size:13px">
+        <li>Забыл о приеме</li><li>Не получил напоминание</li><li>Заболел</li>
+        <li>Личные обстоятельства</li><li>Не смог приехать</li><li>Опоздал</li>
+        <li>Передумал</li><li>Испугался лечения</li>
+        <li>Финансовая причина</li><li>Записался в другую клинику</li>
+        <li>Не устроил врач</li><li>Не устроило время</li>
+        <li>Не отвечает после неявки</li><li>Ошибочная запись</li><li>Другое</li>
+      </ol>
+    </div>
+    <div class="card">
+      <h3>Причины переноса</h3>
+      <ol style="margin:6px 0 0 18px;padding:0;font-size:13px">
+        <li>Пациент заболел</li><li>Пациент занят / работа</li>
+        <li>Семейные обстоятельства</li><li>Финансовая причина</li>
+        <li>Страх / сомнения</li><li>Хочет подумать</li>
+        <li>Неудобное время</li><li>Командировка / отъезд</li>
+        <li>Не готов к лечению сейчас</li>
+        <li>Перенос по графику врача</li><li>Врач заболел</li>
+        <li>Техническая причина клиники</li><li>Нужно дообследование / КТ</li>
+        <li>Нужно согласование плана</li><li>Нужно изменить план лечения</li>
+        <li>Другое</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section id="fields">
+  <h2>Обязательные поля</h2>
+  <p class="lede">Минимально достаточный набор для интеграции, отчетов и блокировок переходов.</p>
+  <div class="fields">
+    <div class="card">
+      <h3>Поля контакта</h3>
+      <ul>
+        <li><b>ID пациента DentalPRO</b> &mdash; ключ интеграции</li>
+        <li>ФИО</li>
+        <li>Телефон</li>
+        <li>Дополнительный телефон / WhatsApp</li>
+        <li>Дата рождения</li>
+        <li>Филиал</li>
+        <li>Статус пациента</li>
+        <li><b>Источник первичного привлечения</b> &mdash; не перезаписывается</li>
+        <li>Группа источника</li>
+        <li>Согласие на обработку персональных данных</li>
+        <li>Согласие на рассылки</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Поля сделки</h3>
+      <ul>
+        <li>ID сделки amoCRM</li>
+        <li>ID записи DentalPRO</li>
+        <li>ID обращения Calltouch</li>
+        <li>Тип обращения</li>
+        <li><b>Источник текущей сделки</b> &mdash; для каждого нового обращения</li>
+        <li>Группа источника</li>
+        <li>UTM source / medium / campaign / content / term</li>
+        <li>Страница входа, страница заявки</li>
+        <li>Направление услуги, цель визита</li>
+        <li>Врач, дата и время приема, филиал</li>
+        <li>Сумма плана лечения, согласованная сумма</li>
+        <li>Причина отказа / неявки / переноса, инициатор переноса</li>
+        <li>Дата следующего касания</li>
+        <li>Комментарий администратора</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 style="margin-top:18px;font-size:15px">Блокировки переходов</h3>
+  <table class="compact">
+    <thead><tr><th>Переход</th><th>Что должно быть заполнено</th></tr></thead>
+    <tbody>
+      <tr><td>В "Записан"</td><td>Врач, дата и время, филиал, ID записи DentalPRO</td></tr>
+      <tr><td>В "Не пришел"</td><td>Причина неявки</td></tr>
+      <tr><td>В "Перенос"</td><td>Причина переноса, инициатор, новая дата или дата следующего касания</td></tr>
+      <tr><td>В "Закрыто - отказ"</td><td>Причина отказа и комментарий</td></tr>
+      <tr><td>В "План составлен"</td><td>Сумма плана, направление услуги, врач</td></tr>
+      <tr><td>В "Согласован"</td><td>Согласованная сумма, дата старта лечения</td></tr>
+      <tr><td>В "Лечение завершено"</td><td>Дата следующего контроля или профгигиены</td></tr>
+      <tr><td>Любой этап</td><td>Сделка без задачи и без финального результата запрещена</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="roles">
+  <h2>Роли и ответственность</h2>
+  <p class="lede">Старший администратор не используется. Управленческий контроль выполняет Координатор лечения.</p>
+  <div class="roles">
+    <div class="role">
+      <h3>Руководитель клиники</h3>
+      <p>Стратегический контроль</p>
+      <ul><li>Отчеты по лидам, записям, явкам</li><li>Планы лечения, лечение, выручка</li><li>Каналы и эффективность</li></ul>
+    </div>
+    <div class="role">
+      <h3>Координатор лечения</h3>
+      <p>Удержание и возврат пациентов</p>
+      <ul>
+        <li>"Думает", "План составлен" без согласования</li>
+        <li>"Перенос без даты", "Неявка без возврата"</li>
+        <li>"Нет следующей записи", "Пауза в лечении"</li>
+        <li>"Риск оттока", "Лечение прервано"</li>
+      </ul>
+    </div>
+    <div class="role">
+      <h3>Администратор</h3>
+      <p>Первая линия и операционка</p>
+      <ul><li>Заявки, звонки, чаты</li><li>Запись, подтверждение, фиксация результата</li><li>Заполнение обязательных полей</li></ul>
+    </div>
+    <div class="role">
+      <h3>Маркетолог</h3>
+      <p>Каналы, источники, бюджеты</p>
+      <ul><li>UTM, Calltouch, рекламные кампании</li><li>Стоимость лида / записи / пришедшего</li><li>ROMI по каналам</li></ul>
+    </div>
+    <div class="role">
+      <h3>Врач</h3>
+      <p>Работает в DentalPRO</p>
+      <ul><li>Консультация, план, согласование</li><li>Лечение, завершение</li><li>Не работает вручную в amoCRM</li></ul>
+    </div>
+    <div class="role">
+      <h3>Финансист</h3>
+      <p>Сверка денег</p>
+      <ul><li>Оплаты и выручка</li><li>Управленческие данные</li></ul>
+    </div>
+    <div class="role">
+      <h3>Технический интегратор</h3>
+      <p>Эксплуатация интеграций</p>
+      <ul><li>Calltouch, Альбато, amoCRM, DentalPRO</li><li>Webhooks, поля, роботы, права доступа</li><li>Логи и мониторинг</li></ul>
+    </div>
+  </div>
+</section>
+
+<section id="reports">
+  <h2>Отчеты и KPI</h2>
+  <p class="lede">Минимальный набор управленческих отчетов в amoCRM. Источник чисел: amoCRM (воронки, задачи), DentalPRO (визиты, оплаты), Calltouch (каналы).</p>
+  <table>
+    <thead>
+      <tr><th>Отчет</th><th>Цель</th><th>Метрики</th><th>Кому</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Воронка обращений</td><td>Контроль конверсии</td><td>Заявки -> записи -> приходы -> планы -> лечение</td><td>Руководитель, Маркетолог</td></tr>
+      <tr><td>Источники и каналы</td><td>Эффективность маркетинга</td><td>Лиды, записи, пришедшие, ROMI, стоимость пришедшего</td><td>Маркетолог, Руководитель</td></tr>
+      <tr><td>SLA первой реакции</td><td>Качество первой линии</td><td>Время до первого контакта, доля просрочек</td><td>Координатор лечения, Руководитель</td></tr>
+      <tr><td>Неявки и переносы</td><td>Дисциплина расписания</td><td>Доли неявок и переносов, причины, инициаторы</td><td>Координатор лечения, Администратор</td></tr>
+      <tr><td>План лечения</td><td>Согласование и риски</td><td>Сумма плана, доля согласованных, "Думает", "Не согласован"</td><td>Координатор лечения, Руководитель</td></tr>
+      <tr><td>Лечение и удержание</td><td>Риск оттока</td><td>Активные, пауза, риск оттока, завершенные</td><td>Координатор лечения</td></tr>
+      <tr><td>Повторные визиты</td><td>Возвратность</td><td>Доля вернувшихся на профгигиену и контроль</td><td>Координатор лечения, Маркетолог</td></tr>
+      <tr><td>Реактивация базы</td><td>Возврат спящих</td><td>Сегменты, касания, конверсия в запись</td><td>Маркетолог, Координатор лечения</td></tr>
+      <tr><td>Качество данных</td><td>Чистота интеграции</td><td>Доля "Не определено", сделки без ID DentalPRO, дубли</td><td>Маркетолог, Технический интегратор</td></tr>
+      <tr><td>Финансовый стык</td><td>Сверка</td><td>Согласованные суммы amoCRM против оплат DentalPRO</td><td>Финансист, Руководитель</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="acceptance">
+  <h2>Критерии приемки</h2>
+  <p class="lede">20 ключевых тест-кейсов. Полный чек-лист с шагами приведен в <span class="kbd">docs/amo-crm-acceptance-checklist.md</span>.</p>
+  <div class="checklist">
+    <div class="check"><div class="n">1</div><div><b>Звонок из Яндекс Директ</b><p>Создается сделка с источником "Яндекс Директ", UTM сохранены, запись звонка доступна.</p></div></div>
+    <div class="check"><div class="n">2</div><div><b>Заявка из VK</b><p>Источник определен, привязан UTM, сделка попала в воронку 1.</p></div></div>
+    <div class="check"><div class="n">3</div><div><b>Заявка из Яндекс Карт</b><p>Группа источника "Геоагрегаторы", сделка создана.</p></div></div>
+    <div class="check"><div class="n">4</div><div><b>Заявка из 2ГИС</b><p>Источник 2ГИС, сделка создана корректно.</p></div></div>
+    <div class="check"><div class="n">5</div><div><b>Заявка из Напоправку</b><p>Группа "Медицинские агрегаторы", контакт без дублей.</p></div></div>
+    <div class="check"><div class="n">6</div><div><b>Заявка из Продокторов</b><p>Источник Продокторов, поле "Источник первичного привлечения" сохранено.</p></div></div>
+    <div class="check"><div class="n">7</div><div><b>SEO заявка с сайта</b><p>UTM medium = organic, страница входа и страница заявки заполнены.</p></div></div>
+    <div class="check"><div class="n">8</div><div><b>Пропущенный звонок</b><p>Сделка создана, задача обратного звонка с SLA до 10 минут.</p></div></div>
+    <div class="check"><div class="n">9</div><div><b>Дубль по телефону</b><p>Новый контакт не создается, к существующему добавлены примечание и задача.</p></div></div>
+    <div class="check"><div class="n">10</div><div><b>Запись в DentalPRO</b><p>Сделка переходит в "Записан", появились врач, дата, ID записи DentalPRO.</p></div></div>
+    <div class="check"><div class="n">11</div><div><b>Пациент подтвердил прием</b><p>Сделка в "Подтвержден", фиксация канала подтверждения.</p></div></div>
+    <div class="check"><div class="n">12</div><div><b>Пациент пришел</b><p>Сделка в "Пришел", создана сделка в воронке 2 "План лечения".</p></div></div>
+    <div class="check"><div class="n">13</div><div><b>Пациент не пришел</b><p>Без причины неявки переход заблокирован.</p></div></div>
+    <div class="check"><div class="n">14</div><div><b>Пациент перенес прием</b><p>Указаны причина, инициатор, новая дата.</p></div></div>
+    <div class="check"><div class="n">15</div><div><b>План лечения создан</b><p>Сумма плана, направление, врач заполнены, сделка в "План составлен".</p></div></div>
+    <div class="check"><div class="n">16</div><div><b>План согласован</b><p>Согласованная сумма и дата старта обязательны, создается сделка в воронке 3.</p></div></div>
+    <div class="check"><div class="n">17</div><div><b>Пациент начал лечение</b><p>Сделка переходит в "Начал лечение", есть запись в DentalPRO.</p></div></div>
+    <div class="check"><div class="n">18</div><div><b>Лечение завершено</b><p>Сделка в "Завершено", создана сделка в воронке 4 с датой профгигиены.</p></div></div>
+    <div class="check"><div class="n">19</div><div><b>Сделка закрывается в отказ</b><p>Указаны причина отказа из справочника и комментарий.</p></div></div>
+    <div class="check"><div class="n">20</div><div><b>Передача статусов в Calltouch</b><p>Изменения сделки приходят в Calltouch для сквозной аналитики.</p></div></div>
+  </div>
+</section>
+
+<section id="risks">
+  <h2>Риски и безопасность</h2>
+  <p class="lede">Управленческие, интеграционные и регуляторные риски и принципы безопасности.</p>
+  <div class="risks">
+    <div class="risk-card"><h4>Подмена ролей систем</h4><p>amoCRM не должен заменять DentalPRO в части медкарты, расписания и оплат. Это разные мастер-системы.</p></div>
+    <div class="risk-card"><h4>Потеря источника</h4><p>Если "Источник первичного привлечения" перезаписывается, теряется база для ROMI. Поле должно быть защищено.</p></div>
+    <div class="risk-card"><h4>Дубли пациентов</h4><p>Без дедупликации по телефону и ID DentalPRO статистика по возврату пациентов искажается.</p></div>
+    <div class="risk-card"><h4>Сделки без задач</h4><p>Любая сделка без задачи и без финального результата уходит из контроля. Эскалация обязательна.</p></div>
+    <div class="risk-card"><h4>Сбой Calltouch -> Альбато -> amoCRM</h4><p>Нужны логи доставки, повторные попытки, отдельный отчет о пропусках интеграции.</p></div>
+    <div class="risk-card"><h4>Согласие на обработку персональных данных</h4><p>Контакт без согласия не получает рассылки. Сегменты реактивации обязательно проверяют флаги согласий.</p></div>
+    <div class="risk-card"><h4>Доступы и роли</h4><p>Права доступа выдаются по принципу наименьших привилегий. Врач не получает административный доступ к amoCRM.</p></div>
+    <div class="risk-card"><h4>Хранение секретов</h4><p>Токены OAuth, ключи API и webhook URL хранятся в защищенном хранилище, не в коде и не в карточках сделок.</p></div>
+  </div>
+</section>
+
+<section id="docs">
+  <h2>Документы для подрядчика</h2>
+  <p class="lede">Сопроводительный комплект к этой инфографике.</p>
+  <div class="grid g3">
+    <div class="card"><h3>Mermaid схемы</h3><p>Архитектура, путь пациента, воронки, потоки данных.</p><p class="small"><span class="kbd">docs/amo-crm-diagrams.md</span></p></div>
+    <div class="card"><h3>Визуальное ТЗ</h3><p>Логика, требования к настройке, тесты приемки.</p><p class="small"><span class="kbd">docs/amo-crm-visual-tz.md</span></p></div>
+    <div class="card"><h3>Чек-лист приемки</h3><p>20 тест-кейсов с шагами и ожидаемым результатом.</p><p class="small"><span class="kbd">docs/amo-crm-acceptance-checklist.md</span></p></div>
+  </div>
+</section>
+
+</div>
+
+<button id="toTop" aria-label="Наверх">Наверх</button>
+
+<script>
+const toTop=document.getElementById('toTop');
+window.addEventListener('scroll',()=>{
+  if(window.scrollY>500){toTop.classList.add('show')}else{toTop.classList.remove('show')}
+});
+toTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+document.querySelectorAll('nav.toc a').forEach(a=>{
+  a.addEventListener('click',e=>{
+    const id=a.getAttribute('href');
+    if(id&&id.startsWith('#')){
+      const el=document.querySelector(id);
+      if(el){e.preventDefault();window.scrollTo({top:el.offsetTop-70,behavior:'smooth'})}
+    }
+  });
+});
+</script>
+</body>
+</html>
